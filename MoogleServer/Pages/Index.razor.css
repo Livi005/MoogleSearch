@@ -1,0 +1,21 @@
+.results {
+    text-align: left;
+}
+
+.item .title {
+    font-size: large;
+    font-weight: bold;
+}
+
+.h1, h1{
+    color: rgb(0, 255, 255);
+    border: aqua;
+    size: 4vmin;
+    
+}
+
+p{
+    color: #000;
+    size: 0em;
+
+}
