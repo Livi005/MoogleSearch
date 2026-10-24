@@ -1,36 +1,100 @@
 ﻿@page "/"
+@using Microsoft.JSInterop
+@inject IJSRuntime JSRuntime
 
-<PageTitle>Moogle!</PageTitle>
+<PageTitle>Moogle 🐠</PageTitle>
 
-<h1>🔍 Moogle!</h1>
+<!-- Burbujas animadas de fondo -->
+<div class="bubbles" aria-hidden="true">
+    @for (int i = 0; i < 18; i++)
+    {
+        <span class="bubble"></span>
+    }
+</div>
 
-<input class="p-1 my-4" @bind="query" placeholder="Introduzca su búsqueda">
+<!-- Pececitos nadando -->
+<div class="fishes" aria-hidden="true">
+    <span class="fish fish-1">🐟</span>
+    <span class="fish fish-2">🐠</span>
+    <span class="fish fish-3">🐡</span>
+    <span class="fish fish-4">🐟</span>
+    <span class="fish fish-5">🐠</span>
+    
+</div>
 
-<button type="default" class="btn btn-primary" @onclick="RunQuery" @ontouchenter="RunQuery">🔍 Buscar</button>
+<!-- Contenido principal -->
+<div class="moogle-page">
 
-@if (!string.IsNullOrEmpty(result.Suggestion)) {
-    <div class="suggestion">
-        <p>¿Te paso por la cabeza decirme ... <strong><a @onclick="update" href="#">@result.Suggestion</a></strong>?</p>
+    <header class="moogle-header">
+        <h1 class="moogle-logo">
+            <span class="logo-icon">🐠</span>
+            <span class="logo-text">Moogle</span>
+        </h1>
+        <p class="moogle-tagline">Sumérgete y encuentra lo que buscas</p>
+    </header>
+
+    <div class="search-bar">
+        <input
+            class="search-input"
+            @bind="query"
+            @bind:event="oninput"
+            placeholder="🌊 ¿Qué buscas hoy en el océano?" />
+
+        <button
+            type="button"
+            class="search-btn"
+            @onclick="RunQueryAndSplash"
+            @ref="botonRef">
+            <span class="btn-icon">⚓</span>
+            <span class="btn-text">Buscar</span>
+            <span class="splash" aria-hidden="true"></span>
+        </button>
     </div>
-}
 
-<ul class="results">
-@foreach (var item in result.Items()) {
-    <li>
-        <div class="item">
-            <p class="title">@item.Title</p>
-            <p>... @item.Snippet ...</p>
+    @if (!string.IsNullOrEmpty(result.Suggestion)) {
+        <div class="suggestion">
+            <p>
+                🐚 ¿Quizás quisiste decir
+                <strong>
+                    <a @onclick="update" href="#">@result.Suggestion</a>
+                </strong>?
+            </p>
         </div>
-    </li>
-}
-</ul>
+    }
+
+    <div class="results">
+        @foreach (var item in result.Items()) {
+            <div class="item">
+                <p class="title">@item.Title</p>
+                <p class="snippet">... @item.Snippet ...</p>
+            </div>
+        }
+    </div>
+
+</div>
+
+
+<!-- Capa de espuma que aparece al hacer scroll -->
+<div class="foam-layer" id="foam-layer" aria-hidden="true"></div>
+
+<!-- Sonido de olas (se dispara al buscar) -->
+<audio id="wave-sound" preload="auto">
+    <source src="sound/waves.mp3" type="audio/mpeg">
+</audio>
 
 @code {
     private string query = "";
     private SearchResult result = new SearchResult();
+    private ElementReference botonRef;
 
     private void RunQuery() {
         result = Moogle.Query(query);
+    }
+
+    private async Task RunQueryAndSplash() {
+        await JSRuntime.InvokeVoidAsync("playWaveSound");
+        await JSRuntime.InvokeVoidAsync("splashBurst", botonRef);
+        RunQuery();
     }
 
     private void update() {

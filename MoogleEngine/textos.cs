@@ -35,12 +35,12 @@ namespace MoogleEngine
     {
         public static (List<string>, List<string>) Leer() // Leer los txt y los titulos que tengo en la PC.
         {
-            string[] directorio = Directory.GetFiles("../contents"); 
+            string[] directorio = Directory.GetFiles("../Content"); 
             string[] textos = new string[directorio.Length];
             string[] titulos = new string[directorio.Length];
             for(int i = 0; i < textos.Length; i++)
             {
-                StreamReader leer = new StreamReader(directorio[i], System.Text.Encoding.UTF7);
+                StreamReader leer = new StreamReader(directorio[i], System.Text.Encoding.UTF8);
                 textos[i] = leer.ReadToEnd();// leer textos.
                 titulos[i] = Path.GetFileName(directorio[i]);//leer titulos.
             }
